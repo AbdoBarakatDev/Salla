@@ -33,6 +33,17 @@ dependencies:
   carousel_slider: any
   image_picker: any
   flutter_rating_bar: any
+  country_code_picker: any
+  pin_code_fields: any
+  google_fonts: any
+  font_awesome_flutter: any
+  loading_gifs: any
+  firebase_messaging: any
+  firebase_core: any
+  firebase_auth: any
+  fluttertoast: any
+  shimmer: any
+  cached_network_image: any
 #  image_picker_saver: any
 #  modern_form_esys_flutter_share: any
 #  http: any

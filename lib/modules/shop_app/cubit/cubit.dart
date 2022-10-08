@@ -1,6 +1,5 @@
+import 'dart:developer';
 import 'dart:io';
-import 'package:bloc/bloc.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shop_app/models/shop_app_model/cart_model.dart';
@@ -83,14 +82,14 @@ class ShopAppCubit extends Cubit<ShopAppStates> {
       token: token,
     ).then((value) {
       model = HomeModel.fromJson(value.data);
-      // print(model.data.products[0].image);
+      log(model.data.products[0].image);
       model.data.products.forEach((element) {
         favorites.addAll({element.id: element.inFavorites});
       });
-      // print(favorites.toString());
+      log(favorites.toString());
       emit(ShopAppDataSuccessStates());
     }).catchError((error) {
-      print("Error is $error");
+      log("Error is $error");
       emit(ShopAppDataFailStates());
     });
   }
@@ -102,12 +101,12 @@ class ShopAppCubit extends Cubit<ShopAppStates> {
       url: CATEGORIES,
       token: token,
     ).then((value) {
-      // print("Value Data is : ${value.data}");
+      log("Value Data is : ${value.data}");
       categoriesModel = CategoriesModel.fromJson(value.data);
-      // print("Categories are : ${categoriesModel.data.data[0].image}");
+      log("Categories are : ${categoriesModel.data.data[0].image}");
       emit(ShopAppCategoriesSuccessStates());
     }).catchError((error) {
-      print("Error is $error");
+      log("Error is $error");
       emit(ShopAppCategoriesFailStates());
     });
   }
@@ -124,8 +123,8 @@ class ShopAppCubit extends Cubit<ShopAppStates> {
       token: token,
     ).then((value) {
       favoritesModel = ChangFavoritesModel.fromJson(value.data);
-      // print("DATA FAV : ${value.data}");
-      // print("FAV MODEL : ${favoritesModel.status}");
+      log("DATA FAV : ${value.data}");
+      log("FAV MODEL : ${favoritesModel.status}");
       if (!favoritesModel.status) {
         favorites[id] = !favorites[id];
       } else {
@@ -135,7 +134,7 @@ class ShopAppCubit extends Cubit<ShopAppStates> {
     }).catchError((error) {
       favorites[id] = !favorites[id];
       emit(ShopAppChangeFavoritesFailStates());
-      print(error.toString());
+      log(error.toString());
     });
   }
 
@@ -147,12 +146,12 @@ class ShopAppCubit extends Cubit<ShopAppStates> {
       url: FAVORITES,
       token: token,
     ).then((value) {
-      // print("Value Data is : ${value.data}");
+      log("Value Data is : ${value.data}");
       favoritesModelData = FavoritesModel.fromJson(value.data);
-      // print("Favorites are : ${favoritesModelData.data.data[0].product}");
+      log("Favorites are : ${favoritesModelData.data.data[0].product}");
       emit(ShopAppFavoritesSuccessStates());
     }).catchError((error) {
-      print("Error is $error");
+      log("Error is $error");
       emit(ShopAppFavoritesFailStates());
     });
   }
@@ -165,15 +164,15 @@ class ShopAppCubit extends Cubit<ShopAppStates> {
       url: PROFILE,
       token: token,
     ).then((value) {
-      // print("Value Data is : ${value.data}");
-      // print("Token in cubit is : $token");
+      log("Value Data is : ${value.data}");
+      log("Token in cubit is : $token");
       profileModel = ShopAppLoginModel.fromJson(value.data);
-      print("Token When Get Profile Data: $token");
-      print("Email  When Get Profile Data: ${profileModel.data.email}");
-      // print("Email are : ${profileModel.data.email}");
+      log("Token When Get Profile Data: $token");
+      log("Email  When Get Profile Data: ${profileModel.data.email}");
+      log("Email are : ${profileModel.data.email}");
       emit(ShopAppFavoritesSuccessStates());
     }).catchError((error) {
-      print("Error is $error");
+      log("Error is $error");
       emit(ShopAppFavoritesFailStates());
     });
   }
@@ -188,7 +187,7 @@ class ShopAppCubit extends Cubit<ShopAppStates> {
     @required String email,
     @required String phone,
     @required String image,
-    // @required String password,
+    @required String password,
   }) {
     emit(ShopAppFavoritesLoadingStates());
     ShopAppDioHelper.put(
@@ -199,17 +198,25 @@ class ShopAppCubit extends Cubit<ShopAppStates> {
         "email": email,
         "phone": phone,
         "image": image,
-        // "password":password,
+        "password": password,
       },
     ).then((value) {
-      // print("Value Data is : ${value.data}");
-      profileModel = ShopAppLoginModel.fromJson(value.data);
-      // print("Name become : ${profileModel.data.name}");
-      // print("Email become : ${profileModel.data.email}");
-      // print("Phone become : ${profileModel.data.phone}");
+      if (ShopAppLoginModel.fromJson(value.data).status == false) {
+        showToast(
+            message: ShopAppLoginModel.fromJson(value.data).message +
+                " try another one",
+            color: Colors.red);
+      } else {
+        log("value after update : ${ShopAppLoginModel.fromJson(value.data).message}");
+        log("Value Data is : ${value.data}");
+        profileModel = ShopAppLoginModel.fromJson(value.data);
+        log("Name become : ${profileModel.data.name}");
+        log("Email become : ${profileModel.data.email}");
+        log("Phone become : ${profileModel.data.phone}");
+      }
       emit(ShopAppFavoritesSuccessStates());
     }).catchError((error) {
-      print("Error is $error");
+      log("Error is $error");
       emit(ShopAppFavoritesFailStates());
     });
   }
@@ -219,7 +226,7 @@ class ShopAppCubit extends Cubit<ShopAppStates> {
   double productPrice = 0;
 
   void setInitialQuantity() {
-    productQuantity=1;
+    productQuantity = 1;
     emit(ShopAppInitialQuantityState());
   }
 
@@ -259,12 +266,11 @@ class ShopAppCubit extends Cubit<ShopAppStates> {
   //================================================
   ChangOrdersModel changOrdersModel;
 
-  void addOrder({
-    @required int addressId,
-    @required int paymentMethod,
-    @required bool usePoints,
-    BuildContext context
-  }) {
+  void addOrder(
+      {@required int addressId,
+      @required int paymentMethod,
+      @required bool usePoints,
+      BuildContext context}) {
     emit(ShopAppAddOrderLoadingStates());
 
     ShopAppDioHelper.post(
@@ -277,20 +283,25 @@ class ShopAppCubit extends Cubit<ShopAppStates> {
       token: token,
     ).then((value) {
       changOrdersModel = ChangOrdersModel.fromJson(value.data);
-      print("Change Order on Add: " + changOrdersModel.toString());
-      print("Change Order on Add: " + changOrdersModel.status.toString());
-      print("Change Order on Add: " + changOrdersModel.message.toString());
-      showSnackBar(context: context, message: changOrdersModel.message, states: SnackBarStates.SUCCESS);
-      // if (!changOrdersModel.status) {
-      // } else {
+      log("Change Order on Add: " + changOrdersModel.toString());
+      log("Change Order on Add: " + changOrdersModel.status.toString());
+      log("Change Order on Add: " + changOrdersModel.message.toString());
+      showSnackBar(
+          context: context,
+          message: changOrdersModel.message,
+          states: SnackBarStates.SUCCESS);
+      if (!changOrdersModel.status) {
+      } else {
         getOrders(context: context);
-
-      // }
+      }
       emit(ShopAppAddOrderSuccessStates());
     }).catchError((error) {
-      showSnackBar(context: context, message: error.toString(), states: SnackBarStates.ERROR);
+      showSnackBar(
+          context: context,
+          message: error.toString(),
+          states: SnackBarStates.ERROR);
       emit(ShopAppAddOrderFailStates());
-      print(error.toString());
+      log(error.toString());
     });
   }
 
@@ -304,15 +315,15 @@ class ShopAppCubit extends Cubit<ShopAppStates> {
       token: token,
     ).then((value) {
       changOrdersModel = ChangOrdersModel.fromJson(value.data);
-      print("Change Order on Cancel: " + changOrdersModel.toString());
+      log("Change Order on Cancel: " + changOrdersModel.toString());
       if (!changOrdersModel.status) {
       } else {
-        // getOrders();
+        getOrders();
       }
       emit(ShopAppCancelOrderSuccessStates());
     }).catchError((error) {
       emit(ShopAppCancelOrderFailStates());
-      print(error.toString());
+      log(error.toString());
     });
   }
 
@@ -324,77 +335,102 @@ class ShopAppCubit extends Cubit<ShopAppStates> {
       url: ORDERS,
       token: token,
     ).then((value) {
-      // print("Value in add is : "+value.data.toString());
+      log("Value in add is : " + value.data.toString());
       ordersModel = OrdersModel.fromJson(value.data);
-      print("ordersModel get Orders: " + ordersModel.data.data.toString());
-      // showSnackBar(context: context, message: ordersModel.data.data.toString(), states: SnackBarStates.ERROR);
+      log("ordersModel get Orders: " + ordersModel.data.data.toString());
+      showSnackBar(
+          context: context,
+          message: ordersModel.data.data.toString(),
+          states: SnackBarStates.ERROR);
       emit(ShopAppGetOrderSuccessStates());
     }).catchError((error) {
-      print("Error is $error");
-      // showSnackBar(context: context, message: error.toString(), states: SnackBarStates.ERROR);
+      log("Error is $error");
+      showSnackBar(
+          context: context,
+          message: error.toString(),
+          states: SnackBarStates.ERROR);
       emit(ShopAppGetOrderFailStates());
     });
   }
+
 //================================================
   CartModel cartModel;
+
   void getCarts({BuildContext context}) {
     emit(ShopAppGetCartsLoadingStates());
     ShopAppDioHelper.get(
       url: CARTS,
       token: token,
     ).then((value) {
-      print("Value in add is : "+value.data.toString());
+      log("Value in add is : " + value.data.toString());
       cartModel = CartModel.fromJson(value.data);
-      // print("cartsModel get Carts is: " + cartModel.data.cartItems.toString());
-      // print("Length cartsModel get Carts is: " + cartModel.data.cartItems.length.toString());
+      log("cartsModel get Carts is: " + cartModel.data.cartItems.toString());
+      log("Length cartsModel get Carts is: " +
+          cartModel.data.cartItems.length.toString());
 
-      // showSnackBar(context: context, message: ordersModel.data.data.toString(), states: SnackBarStates.ERROR);
+      showSnackBar(
+          context: context,
+          message: ordersModel.data.data.toString(),
+          states: SnackBarStates.ERROR);
       emit(ShopAppGetCartsSuccessStates());
     }).catchError((error) {
-      print("Error is $error");
-      // showSnackBar(context: context, message: error.toString(), states: SnackBarStates.ERROR);
+      log("Error is $error");
+      showSnackBar(
+          context: context,
+          message: error.toString(),
+          states: SnackBarStates.ERROR);
       emit(ShopAppGetCartsFailStates());
     });
   }
 
-  ChangCartsModel changCartsModel;
+//===============================================
+  ChangCartsModel changeCartsModel;
 
-  void addCart({
-    @required int prodId,
-    BuildContext context
-  }) {
+  void addToCart(
+      {@required int prodId, @required int quantity, BuildContext context}) {
     emit(ShopAppAddCartsLoadingStates());
 
     ShopAppDioHelper.post(
       url: CARTS,
       data: {
         "product_id": prodId,
+        "quantity": quantity,
+        "product": {
+          "id": prodId,
+          "price": 44500,
+          "old_price": 44500,
+          "discount": 0,
+          "image":
+              "https://student.valuxapps.com/storage/uploads/products/1615442168bVx52.item_XXL_36581132_143760083.jpeg",
+          "name": "لاب توب ابل ماك بوك برو",
+          "description":
+              "يمكنك التمتع بتجربة الحوسبة بطريقة لم يسبق لها مثيل عندما تقوم باقتناء لاب توب ابل ماك بوك برو. يتميز هذا اللاب توب بمعالج انتل كور i5 من الجيل الثامن بتردد 2.3 جيجاهرتز والذي يضمن لك استمرار أداء النظام بكفاءة عالية. استمتع بتجربة تعدد المهام على نحو سلس وسريع باستخدام ذاكرة الوصول العشوائي بسعة 8 جيجا. يقدم لك معالج الرسومات الجرافيكية انتل ايريس بلس Intel Iris Plus Graphics صور بجودة عالية ويجعل تجربة اللعب الخاصة بك سلسة وممتعة بشكل لم يسبق له مثيل. يوفر نظام التشغيل ماك او اس macOS العديد من الميزات سهلة الاستخدام. قم بتخزين الأفلام المفضلة لديك، والتسجيلات الصوتية، والملفات الهامة الأخرى الخاصة بك بشكل مريح على الذاكرة اس اس دي SSD سعة 512 جيجا. تسمح لك شاشة العرض الرائعة حجم 13.3 انش بعرض الافلام المفضلة لديك والمحتويات الاخرى بجودة عالية. تتميز شاشة ريتينا Retina بإضاءة خلفية ال اي دي زاهية ونسبة تباين عالية تعزز تجربة المشاهدة الخاصة بك. توفر تقنية ترو تون True Tone تجربة مشاهدة طبيعية عن طريق ضبط توازن اللون الأبيض للشاشة حسب درجة حرارة لون الضوء من حولك. يتميز هذا اللاب توب بمخرجات صوتية متوازنة، وعالية الدقة، ونابضة بالحياة، ويوفر لك تجربة صوتية غامرة. تسمح لك شريحة ابل تي Apple T2 بتخزين البيانات الخاصة بك بتنسيق مشفر بمساعدة المعالج الثانوي سيكيور انكليف Secure Enclave. وعلاوة على ذلك، تعمل هذه الشريحة المتطورة على تعزيز وتشديد الحماية والامان لبياناتك بمساعدة من مستشعر التعرف على الهوية عن طريق اللمس Touch ID. يسمح لك هذا المستشعر المتقدم بإلغاء قفل الكمبيوتر المحمول باستخدام بصمات أصابعك فقط. تعمل عناصر التحكم بالشريط اللمسي Touchbar على تبسيط الأنشطة المختلفة مثل إرسال بريد إلكتروني أو تنسيق مستند معين. يمكن حمل لاب توب ابل ماك بوك برو خفيف الوزن بسهولة في حقيبة الظهر الخاصة بك. يتميز هذا اللاب توب باللون الرمادي والذي يضفي عليه مظهراً مميزاً وجميلاً."
+        }
       },
       token: token,
     ).then((value) {
-
-      changCartsModel = ChangCartsModel.fromJson(value.data);
-      print("Change Carts on Add: " + changCartsModel.toString());
-      // print("Change Carts on Add: " + changCartsModel.status.toString());
-      // print("Change Carts on Add: " + changCartsModel.message.toString());
-      showSnackBar(context: context, message: changCartsModel.message, states: SnackBarStates.SUCCESS);
-      // if (!changOrdersModel.status) {
-      // } else {
-      getOrders(context: context);
-
-      // }
+      changeCartsModel = ChangCartsModel.fromJson(value.data);
+      log("Change Carts on Add: " + changeCartsModel.toString());
+      showSnackBar(
+          context: context,
+          message: changeCartsModel.message,
+          states: SnackBarStates.SUCCESS);
+      if (!changOrdersModel.status) {
+      } else {
+        getCarts(context: context);
+      }
       emit(ShopAppAddCartsSuccessStates());
     }).catchError((error) {
-      showSnackBar(context: context, message: error.toString(), states: SnackBarStates.ERROR);
+      showSnackBar(
+          context: context,
+          message: error.toString(),
+          states: SnackBarStates.ERROR);
       emit(ShopAppAddCartsFailStates());
-      print(error.toString());
+      log(error.toString());
     });
   }
 
-  void deleteCart({
-    @required int prodId,
-    BuildContext context
-  }) {
+  void deleteCart({@required int prodId, BuildContext context}) {
     emit(ShopAppRemoveCartsLoadingStates());
 
     ShopAppDioHelper.post(
@@ -404,21 +440,24 @@ class ShopAppCubit extends Cubit<ShopAppStates> {
       },
       token: token,
     ).then((value) {
-      changCartsModel = ChangCartsModel.fromJson(value.data);
-      print("Delete Cart is : " + changCartsModel.toString());
-      // print("Change Carts on Add: " + changCartsModel.status.toString());
-      // print("Change Carts on Add: " + changCartsModel.message.toString());
-      showSnackBar(context: context, message: "Deleted Successfully", states: SnackBarStates.SUCCESS);
-      // if (!changOrdersModel.status) {
-      // } else {
-      getOrders(context: context);
-
-      // }
+      changeCartsModel = ChangCartsModel.fromJson(value.data);
+      log("Delete Cart is : " + changeCartsModel.toString());
+      showSnackBar(
+          context: context,
+          message: "Deleted Successfully",
+          states: SnackBarStates.SUCCESS);
+      if (!changOrdersModel.status) {
+      } else {
+        getCarts(context: context);
+      }
       emit(ShopAppRemoveCartsSuccessStates());
     }).catchError((error) {
-      showSnackBar(context: context, message: error.toString(), states: SnackBarStates.ERROR);
+      showSnackBar(
+          context: context,
+          message: error.toString(),
+          states: SnackBarStates.ERROR);
       emit(ShopAppRemoveCartsFailStates());
-      print(error.toString());
+      log(error.toString());
     });
   }
 }

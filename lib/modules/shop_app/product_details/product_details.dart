@@ -1,28 +1,18 @@
-import 'dart:io';
-import 'dart:typed_data';
+import 'dart:developer';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:image_picker/image_picker.dart';
-// import 'package:image_picker_saver/image_picker_saver.dart';
-// import 'package:modern_form_esys_flutter_share/modern_form_esys_flutter_share.dart';
-
 import 'package:shop_app/models/shop_app_model/shop_app_home_model.dart';
 import 'package:shop_app/modules/shop_app/cubit/cubit.dart';
 import 'package:shop_app/modules/shop_app/cubit/states.dart';
-
 import 'package:shop_app/shared/components/components.dart';
 import 'package:shop_app/shared/components/constants.dart';
 import 'package:shop_app/shared/styles/colors.dart';
 
-import 'package:http/http.dart' as http;
-
-
 class ShopProductDetailsScreen extends StatelessWidget {
-  ProductsModel product;
+  final ProductsModel product;
 
   ShopProductDetailsScreen({
     this.product,
@@ -32,7 +22,6 @@ class ShopProductDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int index;
     ShopAppCubit.get(context).setInitialQuantity();
     if (ShopAppCubit
         .get(context)
@@ -57,8 +46,9 @@ class ShopProductDetailsScreen extends StatelessWidget {
             child: defaultButton(
                 text: "Add To Cart",
                 function: () {
-                  ShopAppCubit.get(context).addCart(
+                  ShopAppCubit.get(context).addToCart(
                     prodId: product.id,
+                    quantity: ShopAppCubit.get(context).productQuantity,
                     context: context,
                   );
                   ShopAppCubit.get(context).getData();
@@ -70,7 +60,6 @@ class ShopProductDetailsScreen extends StatelessWidget {
           ),
           appBar: AppBar(
             backgroundColor: Colors.transparent,
-            // titleTextStyle: Theme.of(context).textTheme.headline6.copyWith(color: Colors.white),
             iconTheme: IconThemeData(color: Colors.white),
             elevation: 0.0,
             leading: IconButton(
@@ -84,7 +73,6 @@ class ShopProductDetailsScreen extends StatelessWidget {
                   ),
                   backgroundColor: Colors.grey.withOpacity(0.5)),
             ),
-            // title: Text("Product Details"),
             actions: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -116,17 +104,15 @@ class ShopProductDetailsScreen extends StatelessWidget {
                       items: product.images
                           .map(
                             (e) =>
-                            Container(
-                              width: double.infinity,
-                              height: height * 0.50,
-                              decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    image: NetworkImage(e),
-                                    fit: BoxFit.cover,
-                                  ),
-                                  borderRadius: BorderRadius.vertical(
-                                      bottom: Radius.circular(70))),
-                            ),
+                                customShimmerNetworkImage(
+                                  imagePath: e,
+                                  borderRadius: 70,
+                                  imgHeight: height * 0.50,
+                                  imgWidth: double.infinity,
+                                  backgroundWidth: double.infinity,
+                                  imgFit: BoxFit.cover,
+
+                                ),
                       )
                           .toList(),
                       options: CarouselOptions(
@@ -224,7 +210,7 @@ class ShopProductDetailsScreen extends StatelessWidget {
                                   : Colors.grey,
                             ),
                             onPressed: () {
-                              print(product.id);
+                              log(product.id.toString());
                               ShopAppCubit.get(context)
                                   .changeFavorites(product.id);
                             },
@@ -361,7 +347,7 @@ class ShopProductDetailsScreen extends StatelessWidget {
                                   color: Colors.amber,
                                 ),
                             onRatingUpdate: (rating) {
-                              print(rating);
+                              log(rating.toString());
                             },
                           ),
                           Icon(
@@ -381,7 +367,8 @@ class ShopProductDetailsScreen extends StatelessWidget {
       },
     );
   }
-
+  
+  //todo: add save action
   // onImageSaveBtnPressed(String imgSrc) async {
   //   File image;
   //   var response = await http.get(Uri(path: imgSrc));

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +14,6 @@ import 'package:shop_app/modules/shop_app/product_details/product_details.dart';
 import 'package:shop_app/modules/shop_app/search/cubit/cubit.dart';
 import 'package:shop_app/shared/components/components.dart';
 import 'package:shop_app/shared/components/constants.dart';
-import 'package:shop_app/shared/cubit/app_cubit.dart';
 
 class ShopAppHomeScreen extends StatelessWidget {
   static String id = "ShopAppHomeScreen";
@@ -65,16 +66,47 @@ class ShopAppHomeScreen extends StatelessWidget {
           CarouselSlider(
             items: data.banners
                 .map(
-                  (e) => FadeInImage(
-                    width: double.infinity,
-                    image: NetworkImage(e.image),
-                    placeholder: AssetImage("assets/images/loading.jpg",),
-                    placeholderFit: BoxFit.scaleDown,
-                    imageErrorBuilder: (context, error, stackTrace) {
-                      return Image.asset("assets/images/error_handle.png",
-                          fit: BoxFit.fitWidth);
-                    },
-                    fit: BoxFit.cover,
+                  (e) =>
+                      // FadeInImage(
+                      //   width: double.infinity,
+                      //   image: NetworkImage(e.image),
+                      //   // placeholder: AssetImage(AppCubit.get(context).isDark?loadingIconDark:loadingIconLite,),
+                      //   placeholderFit: BoxFit.scaleDown,
+                      //   imageErrorBuilder: (context, error, stackTrace) {
+                      //     return Image.asset("assets/images/error_handle.png",
+                      //         fit: BoxFit.fitWidth);
+                      //   },
+                      //   fit: BoxFit.cover,
+                      // ),
+                      // ClipRRect(
+                      //   borderRadius: BorderRadius.circular(10.0),
+                      //   child: CachedNetworkImage(
+                      //     width: double.infinity,
+                      //     height: 150,
+                      //     fit: BoxFit.cover,
+                      //     imageUrl: e.image,
+                      //     placeholder: (context, url) => Shimmer.fromColors(
+                      //       baseColor: Colors.grey[850],
+                      //       highlightColor: Colors.grey[800],
+                      //       child: Container(
+                      //         height: 150.0,
+                      //         width: 120.0,
+                      //         decoration: BoxDecoration(
+                      //           color: Colors.black,
+                      //           borderRadius: BorderRadius.circular(10.0),
+                      //         ),
+                      //       ),
+                      //     ),
+                      //     errorWidget: (context, url, error) => const Icon(Icons.error),
+                      //   ),
+                      // ),
+
+                  customShimmerNetworkImage(
+                    imagePath: e.image,
+                    imgHeight: 150,
+                        backgroundWidth: double.infinity,
+                    imgWidth: double.infinity,
+                    imgFit: BoxFit.cover,
                   ),
                 )
                 .toList(),
@@ -126,7 +158,8 @@ class ShopAppHomeScreen extends StatelessWidget {
                   ShopAppCubit.get(context).model.data.products.length,
                   (index) => GestureDetector(
                         onTap: () {
-                          print("ID IS : ${ShopAppCubit.get(context).model.data.products[index].id}");
+                          log(
+                              "ID IS : ${ShopAppCubit.get(context).model.data.products[index].id}");
                           doWidgetNavigation(
                               context,
                               ShopProductDetailsScreen(
@@ -159,18 +192,12 @@ class ShopAppHomeScreen extends StatelessWidget {
           Stack(
             alignment: AlignmentDirectional.bottomStart,
             children: [
-              FadeInImage(
-                height: 150,
-                width: double.infinity,
-                image: NetworkImage(model.image),
-                placeholder: AssetImage("assets/images/loading.jpg",),
-                placeholderFit: BoxFit.scaleDown,
-                imageErrorBuilder: (context, error, stackTrace) {
-                  return Image.asset("assets/images/error_handle.png",
-                      // fit: BoxFit.fitWidth
-                      );
-                },
-                fit: BoxFit.cover,
+              customShimmerNetworkImage(
+                imagePath: model.image,
+                imgHeight: 150,
+                backgroundWidth: double.infinity,
+                imgWidth: double.infinity,
+                imgFit: BoxFit.scaleDown,
               ),
               model.discount != 0
                   ? Container(
@@ -222,7 +249,7 @@ class ShopAppHomeScreen extends StatelessWidget {
                             : Colors.grey,
                       ),
                       onPressed: () {
-                        print(model.id);
+                        log(model.id.toString());
                         ShopAppCubit.get(context).changeFavorites(model.id);
                       },
                     )
@@ -256,16 +283,11 @@ class ShopAppHomeScreen extends StatelessWidget {
               child: Stack(
                 alignment: AlignmentDirectional.bottomCenter,
                 children: [
-                  FadeInImage(
-                    height: mainCategoryItemHeight,
-                    image: NetworkImage(model.data.data[index].image),
-                    placeholder: AssetImage("assets/images/loading.jpg",),
-                    placeholderFit: BoxFit.scaleDown,
-                    imageErrorBuilder: (context, error, stackTrace) {
-                      return Image.asset("assets/images/error_handle.png",
-                          fit: BoxFit.fitWidth);
-                    },
-                    fit: BoxFit.cover,
+                  customShimmerNetworkImage(
+                    imagePath: model.data.data[index].image,
+                    imgHeight: mainCategoryItemHeight,
+                    imgWidth: mainCategoryItemWidth,
+                    backgroundWidth: mainCategoryItemWidth,
                   ),
                   Container(
                       width: mainCategoryItemWidth,

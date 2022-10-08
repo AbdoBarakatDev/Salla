@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shop_app/modules/shop_app/search/cubit/cubit.dart';
 import 'package:shop_app/modules/shop_app/search/cubit/states.dart';
 import 'package:shop_app/shared/components/components.dart';
+import 'package:shop_app/shared/components/constants.dart';
+import 'package:shop_app/shared/cubit/app_cubit.dart';
 
 class ShopCategoryDetailsScreen extends StatelessWidget {
   static String id = "ShopCategoryDetailsScreen";
@@ -30,28 +32,37 @@ class ShopCategoryDetailsScreen extends StatelessWidget {
                   child: Stack(
                     alignment: AlignmentDirectional.bottomStart,
                     children: [
-                      FadeInImage(
-                        width: width,
-                        image: NetworkImage(modelCategoryImage.toString()),
-                        placeholder: AssetImage(
-                          "assets/images/loading.jpg",
-                        ),
-                        placeholderFit: BoxFit.scaleDown,
-                        imageErrorBuilder: (context, error, stackTrace) {
-                          return Image.asset("assets/images/error_handle.png",
-                              fit: BoxFit.fitWidth);
-                        },
-                        fit: BoxFit.fitWidth,
+                      // FadeInImage(
+                      //   width: width,
+                      //   image: NetworkImage(modelCategoryImage.toString()),
+                      //   placeholder: AssetImage(
+                      //     AppCubit.get(context).isDark?loadingIconDark:loadingIconLite,
+                      //   ),
+                      //   placeholderFit: BoxFit.scaleDown,
+                      //   imageErrorBuilder: (context, error, stackTrace) {
+                      //     return Image.asset(loadingErrorImage,
+                      //         fit: BoxFit.fitWidth);
+                      //   },
+                      //   fit: BoxFit.fitWidth,
+                      // ),
+                      customShimmerNetworkImage(
+                        imagePath: modelCategoryImage.toString(),
+                        imgHeight: height * 0.25,
+                        imgWidth: width,
+                        backgroundWidth: width,
+                        imgFit: BoxFit.fitWidth,
                       ),
                       Container(
                           width: width,
                           color: Colors.black.withOpacity(0.4),
                           child: Wrap(
-                            children: [Text(modelCategory.toString().toUpperCase(),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline4
-                                    .copyWith(color: Colors.white)),],
+                            children: [
+                              Text(modelCategory.toString().toUpperCase(),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headline4
+                                      .copyWith(color: Colors.white)),
+                            ],
                           )),
                     ],
                   ),
@@ -60,16 +71,7 @@ class ShopCategoryDetailsScreen extends StatelessWidget {
                     ? Expanded(
                         child: ListView.builder(
                           itemBuilder: (context, index) => GestureDetector(
-                            // onTap: () {
-                            //   doWidgetNavigation(
-                            //       context,
-                            //       ShopProductDetailsScreen(
-                            //         product: ShopAppCubit.get(context)
-                            //             .model
-                            //             .data
-                            //             .products[index],
-                            //       ));
-                            // },
+                            //todo: open product details
                             child: buildListItem(
                               ShopSearchCubit.get(context)
                                   .model

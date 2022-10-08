@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shop_app/models/shop_app_model/search_model.dart';
@@ -21,12 +23,11 @@ class ShopSearchCubit extends Cubit<ShopSearchStates> {
         "text":text,
       }
     ).then((value) {
-      // print("Value Data is : ${value.data}");
+      log("Value Data is : ${value.data}");
       model = SearchModel.fromJson(value.data);
-      // print("Favorites are : ${favoritesModelData.data.data[0].product}");
       emit(ShopSearchSuccessStates());
     }).catchError((error) {
-      print("Error is $error");
+      log("Error is $error");
       emit(ShopSearchErrorStates());
     });
   }
@@ -39,12 +40,11 @@ class ShopSearchCubit extends Cubit<ShopSearchStates> {
           "text":text,
         }
     ).then((value) {
-      // print("Value Data is : ${value.data}");
+      log("Value Data is : ${value.data}");
       model = SearchModel.fromJson(value.data);
-      // print("Favorites are : ${favoritesModelData.data.data[0].product}");
       emit(ShopSearchSuccessStates());
     }).catchError((error) {
-      print("Error is $error");
+      log("Error is $error");
       emit(ShopSearchErrorStates());
     });
   }

@@ -3,9 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shop_app/modules/shop_app/carts_screen/carts_screen.dart';
 import 'package:shop_app/modules/shop_app/cubit/cubit.dart';
 import 'package:shop_app/modules/shop_app/cubit/states.dart';
-import 'package:shop_app/modules/shop_app/orders_screen/orders_screen.dart';
 import 'package:shop_app/modules/shop_app/search/search_screen.dart';
-import 'package:shop_app/modules/shop_app/settings/settings_screen.dart';
 import 'package:shop_app/modules/shop_app/shop_login/shop_login_cubit/shop_login_cubit_states.dart';
 import 'package:shop_app/shared/components/components.dart';
 
@@ -16,6 +14,7 @@ class ShopLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     shopAppCubit = ShopAppCubit.get(context);
+
     return BlocConsumer<ShopAppCubit, ShopAppStates>(
       listener: (context, state) {
         if (state is ShopLogOutLoadingStates) {
@@ -35,19 +34,6 @@ class ShopLayout extends StatelessWidget {
                   doWidgetNavigation(context, ShopAppSearchScreen());
                 },
               ),
-              // IconButton(
-              //   icon: Stack(alignment: AlignmentDirectional.topEnd, children: [
-              //     Icon(Icons.add_shopping_cart),
-              //     if (true)
-              //       CircleAvatar(
-              //         backgroundColor: Colors.red,
-              //         radius: 4,
-              //       ),
-              //   ]),
-              //   onPressed: () {
-              //     doWidgetNavigation(context, OrdersScreen());
-              //   },
-              // ),
               IconButton(
                 icon: Stack(alignment: AlignmentDirectional.topEnd, children: [
                   Icon(Icons.shopping_cart),
@@ -60,10 +46,11 @@ class ShopLayout extends StatelessWidget {
                           0)
                     CircleAvatar(
                       backgroundColor: Colors.red,
-                      radius: 5,
+                      radius: 7,
                       child: Text(
                         "${ShopAppCubit.get(context).cartModel.data.cartItems.length}",
-                        style: TextStyle(fontSize: 10),
+                        style: TextStyle(fontSize: 8),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                 ]),
@@ -112,7 +99,6 @@ class ShopLayout extends StatelessWidget {
               ShopAppCubit.get(context).changeFromAccountIcon(false);
               shopAppCubit.changeBottomNavCurrentIndex(value);
             },
-            // type: BottomNavigationBarType.fixed,
           ),
           body: shopAppCubit.shopScreens[shopAppCubit.currentIndex],
         );

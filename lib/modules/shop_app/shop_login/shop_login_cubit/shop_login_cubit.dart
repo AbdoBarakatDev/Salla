@@ -1,5 +1,4 @@
-import 'package:bloc/bloc.dart';
-import 'package:flutter/cupertino.dart';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shop_app/models/shop_app_model/shop_app_model.dart';
@@ -17,14 +16,14 @@ class ShopLoginCubit extends Cubit<ShopLoginStates> {
 
   static ShopLoginCubit get(BuildContext context) => BlocProvider.of(context);
   ShopAppLoginModel modelData;
-  bool isHidden = false;
+  bool isHidden = true;
   IconData icon = Icons.visibility_off_outlined;
 
   void changePasswordVisibility() {
     isHidden = !isHidden;
     isHidden
-        ? icon = Icons.visibility_outlined
-        : icon = Icons.visibility_off_outlined;
+        ? icon = Icons.visibility_off_outlined
+        : icon = Icons.visibility_outlined;
     emit(ShopLoginChangePasswordVisibilityStates());
   }
 
@@ -38,14 +37,14 @@ class ShopLoginCubit extends Cubit<ShopLoginStates> {
       },
       token: token,
     ).then((value) {
-      print("Login DATA is" + value.data.toString());
+      log("Login DATA is" + value.data.toString());
       modelData = ShopAppLoginModel.fromJson(value.data);
-      // print(modelData.status);
-      // print(modelData.message);
-      // print(modelData.data.token);
+      // log(modelData.status);
+      // log(modelData.message);
+      // log(modelData.data.token);
       emit(ShopLoginSuccessStates(modelData));
     }).catchError((error) {
-      print("Error is: ${error.toString()}");
+      log("Error is: ${error.toString()}");
       emit(ShopLoginErrorStates(error.toString()));
     });
   }
@@ -64,20 +63,20 @@ class ShopLoginCubit extends Cubit<ShopLoginStates> {
       },
       token: token,
     ).then((value) {
-      // print("DATA is" + value.data.toString());
+      // log("DATA is" + value.data.toString());
       CashHelper.clearData(key: "token").then((value) {
-        print("logout DATA is" + value.toString());
-        print("when Logout : ${value.toString()}");
-        print("Logout Token : ${CashHelper.getData(key: "token")}");
+        log("logout DATA is" + value.toString());
+        log("when Logout : ${value.toString()}");
+        log("Logout Token : ${CashHelper.getData(key: "token")}");
         ShopAppCubit.get(context).currentIndex = 0;
         doReplacementWidgetNavigation(context, ShopLoginScreen());
         emit(ShopLogOutSuccessStates());
       }).catchError((error) {
-        print("Error is: ${error.toString()}");
+        log("Error is: ${error.toString()}");
         emit(ShopLogOutFailStates());
       });
     }).catchError((error) {
-      print(error.toString());
+      log(error.toString());
     });
   }
 }

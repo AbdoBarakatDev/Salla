@@ -38,21 +38,13 @@ class ShopAppCategoriesScreen extends StatelessWidget {
                     child: Card(
                       child: Row(
                         children: [
-                          FadeInImage(
-                            height: mainCategoryItemHeight,
-                            width: mainCategoryItemWidth,
-                            image: NetworkImage(model.data.data[index].image),
-                            placeholder: AssetImage("assets/images/loading.jpg",),
-                            placeholderFit: BoxFit.scaleDown,
-                            imageErrorBuilder:
-                                (context, error, stackTrace) {
-                              return Image.asset(
-                                  "assets/images/error_handle.png",
-                                  fit: BoxFit.fitWidth);
-                            },
-                            fit: BoxFit.cover,
+                          customShimmerNetworkImage(
+                            imagePath: model.data.data[index].image,
+                            imgHeight: mainCategoryItemHeight,
+                            imgWidth: mainCategoryItemWidth,
+                            backgroundWidth: mainCategoryItemWidth,
+                            imgFit: BoxFit.cover,
                           ),
-
                           SizedBox(
                             width: 10,
                           ),

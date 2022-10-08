@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shop_app/shared/components/constants.dart';
@@ -12,7 +14,7 @@ class ShopAppDioHelper {
         },
         receiveDataWhenStatusError: true,
        ));
-    print("Dio Initiated successfully");
+    log("Dio Initiated successfully");
   }
 
   static Future<Response> get({
@@ -54,6 +56,7 @@ class ShopAppDioHelper {
     String lang = language,
     String token,
   }) async {
+    log("Token When add To cart: $token");
     dio.options.headers = {
       "lang": lang,
       "Content-Type": "application/json",

@@ -1,7 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shop_app/models/shop_app_model/search_model.dart';
 import 'package:shop_app/modules/shop_app/cubit/cubit.dart';
 import 'package:shop_app/modules/shop_app/search/cubit/cubit.dart';
 import 'package:shop_app/modules/shop_app/search/cubit/states.dart';
@@ -36,13 +34,14 @@ class ShopAppSearchScreen extends StatelessWidget {
                     ),
                   defaultTextFormField(
                       hintText: "Search here..",
-                      hintStyle: Theme.of(context).textTheme.button,
+                      textHintStyle: Theme.of(context).textTheme.button,
                       prefixIcon: Icons.search,
                       borderRadius: 10,
                       maxLines: 1,
                       height: 90,
                       textInputAction: TextInputAction.search,
                       // onChange: (value) {
+                      // todo: add search edit
                       //   ShopSearchCubit.get(context).search(value);
                       // },
                       onSubmited: (value) {

@@ -1,6 +1,5 @@
+import 'dart:developer';
 import 'dart:io';
-
-import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +20,6 @@ import 'package:shop_app/modules/shop_app/shop_login/shop_login_cubit/shop_login
 import 'package:shop_app/modules/shop_app/shop_login/shop_login_screen.dart';
 import 'package:shop_app/modules/shop_app/shop_register/shop_register_cubit/shop_register_cubit.dart';
 import 'package:shop_app/modules/shop_app/shop_register/shop_register_screen.dart';
-import 'package:shop_app/providers/bottom_nav_provider.dart';
 import 'package:shop_app/shared/bloc_observer.dart';
 import 'package:shop_app/shared/components/components.dart';
 import 'package:shop_app/shared/components/constants.dart';
@@ -38,7 +36,7 @@ void main() async {
   bool openedBoardingBefore = CashHelper.getData(key: "onBoarding");
   bool isDarkFromShared = CashHelper.getBoolean(key: "isDark");
   token = CashHelper.getData(key: "token");
-  print("Token is : $token");
+  log("Token is : $token");
   Widget start;
   String startupId;
   if (openedBoardingBefore != null) {
@@ -74,12 +72,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // checkInternetConnection(context);
+    checkInternetConnection(context);
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<BottomNavProvider>(
-          create: (context) => BottomNavProvider(),
-        ),
+      
         BlocProvider<AppCubit>(
           create: (context) =>
               AppCubit()..changeThemeMode(isDarkFromShared: isDark),
@@ -108,9 +104,7 @@ class MyApp extends StatelessWidget {
                 AppCubit.get(context).isDark ? ThemeMode.dark : ThemeMode.light,
             debugShowCheckedModeBanner: false,
             title: 'Flutter Revision',
-            // home: HomePageScreen(),
             home: startUpWidget,
-            // initialRoute: HomePageScreen.id,
             initialRoute: startUpWidgetID,
             routes: {
               OnBoardingScreen.id: (context) => OnBoardingScreen(),
@@ -141,14 +135,14 @@ checkInternetConnection(BuildContext context) async {
   try {
     final result = await InternetAddress.lookup('example.com');
     if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-      print('connected');
+      log('connected');
       showSnackBar(
           context: context,
           message: "Connected To Internet",
           states: SnackBarStates.SUCCESS);
     }
   } on SocketException catch (_) {
-    print('not connected');
+    log('not connected');
     showSnackBar(
         context: context,
         message: "No Internet Connected",

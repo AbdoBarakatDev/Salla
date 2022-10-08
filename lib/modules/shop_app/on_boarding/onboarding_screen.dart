@@ -37,8 +37,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     ),
     OnBoardingModel(
       onBoardingImageAssetSrc: "assets/images/payment_ways.webp",
-      onBoardingHeadline: "Payment Ways",
-      onBoardingDescription: "there were different payment ways i.e 'Cash,Debit Card and Mobile Cash'",
+      onBoardingHeadline: "Easy Payment",
+      onBoardingDescription: "there were different payment ways i.e Cash,Debit Card and Mobile Cash,Bank,Paypal",
     ),
     OnBoardingModel(
       onBoardingImageAssetSrc: "assets/images/fastest_delivery.webp",

@@ -1,4 +1,5 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shop_app/modules/shop_app/shop_layout/shop_layout.dart';
@@ -7,7 +8,7 @@ import 'package:shop_app/modules/shop_app/shop_register/shop_register_cubit/shop
 import 'package:shop_app/modules/shop_app/shop_register/shop_register_cubit/shop_register_cubit_states.dart';
 import 'package:shop_app/shared/components/components.dart';
 import 'package:shop_app/shared/components/constants.dart';
-import 'package:shop_app/shared/cubit/app_cubit.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shop_app/shared/network/local/darkness_helper.dart';
 import 'package:shop_app/shared/styles/colors.dart';
 
@@ -18,9 +19,11 @@ class ShopRegisterScreen extends StatelessWidget {
   final TextEditingController userNameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   var formKey = GlobalKey<FormState>();
+  BuildContext buildContext;
 
   @override
   Widget build(BuildContext context) {
+    buildContext = context;
     return BlocConsumer<ShopRegisterCubit, ShopRegisterStates>(
       listener: (context, state) {
         if (state is ShopRegisterSuccessStates) {
@@ -28,7 +31,7 @@ class ShopRegisterScreen extends StatelessWidget {
             CashHelper.putData(key: "token", value: state.model.data.token)
                 .then((value) {
               token = state.model.data.token;
-              doReplacementWidgetNavigation(context, ShopLayout());
+              doWidgetNavigationAndRemoveUntil(context, ShopLayout());
             });
 
             showSnackBar(
@@ -65,91 +68,115 @@ class ShopRegisterScreen extends StatelessWidget {
                         height: 10,
                       ),
                       Text(
-                        "login now to browse our hot offers",
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyText1
+                        "register now to browse our hot offers",
+                        style: GoogleFonts.acme(
+                                textStyle:
+                                    Theme.of(context).textTheme.bodyText1)
                             .copyWith(color: Colors.grey),
                       ),
                       SizedBox(
                         height: 40,
                       ),
                       Container(
-                        height: 250,
+                        height: 300,
                         child: Column(
                           children: [
                             Expanded(
                               child: defaultTextFormField(
-                                  hintStyle: TextStyle(color: Colors.grey),
-                                  labelText: "User Name",
-                                  hintText: "Type Your Name",
-                                  textInputAction: TextInputAction.next,
-                                  prefixIcon: Icons.person,
-                                  controller: userNameController,
-                                  validatorFunction: (String value) {
-                                    if (value.isEmpty) {
-                                      return "User Name must not be empty";
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                  borderRadius: 10,
-                                  textInputType: TextInputType.emailAddress,
-                                  height: 80),
+                                labelText: "User Name",
+                                textHintStyle: hintTextStyle,
+                                textLabelStyle: labelTextStyle,
+                                textErrorStyle: errorTextStyle,
+                                context: context,
+                                hintText: "Type Your Name",
+                                textInputAction: TextInputAction.next,
+                                prefix: Icon(
+                                  Icons.person,
+                                  color: prefixIconsColor,
+                                ),
+                                controller: userNameController,
+                                validatorFunction: (String value) {
+                                  if (value.isEmpty) {
+                                    return "Name must not be empty";
+                                  } else if (value.length < 3) {
+                                    return "Name must not be less than 3 letters";
+                                  } else {
+                                    return null;
+                                  }
+                                },
+                                borderRadius: 10,
+                                textInputType: TextInputType.emailAddress,
+                              ),
                             ),
                             SizedBox(
                               height: 10,
                             ),
                             Expanded(
                               child: defaultTextFormField(
-                                  hintStyle: TextStyle(color: Colors.grey),
-                                  hintText: "Type Email Address",
-                                  labelText: "Email",
-                                  textInputAction: TextInputAction.next,
-                                  prefixIcon: Icons.email_outlined,
-                                  controller: emailController,
-                                  validatorFunction: (String value) {
-                                    if (value.isEmpty) {
-                                      return "Email Address must not be empty";
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                  borderRadius: 10,
-                                  textInputType: TextInputType.emailAddress,
-                                  height: 80),
+                                hintText: "Type Email Address",
+                                textHintStyle: hintTextStyle,
+                                textLabelStyle: labelTextStyle,
+                                textErrorStyle: errorTextStyle,
+                                context: context,
+                                labelText: "Email",
+                                textInputAction: TextInputAction.next,
+                                prefix: Icon(
+                                  Icons.email_outlined,
+                                  color: prefixIconsColor,
+                                ),
+                                controller: emailController,
+                                validatorFunction: (String value) {
+                                  if (value.isEmpty) {
+                                    return "Email Address must not be empty";
+                                  } else if (!value.contains("@")) {
+                                    return "Email must be Contains @";
+                                  } else if (!((value.contains("gmail.com")) ||
+                                      (value.contains("yahoo.com")))) {
+                                    return "Email typed in a wrong format";
+                                  } else {
+                                    return null;
+                                  }
+                                },
+                                borderRadius: 10,
+                                textInputType: TextInputType.emailAddress,
+                              ),
                             ),
                             SizedBox(
                               height: 10,
                             ),
                             Expanded(
                               child: defaultTextFormField(
-                                height: 80,
-                                hintStyle: TextStyle(color: Colors.grey),
                                 hintText: "Type Your Password",
                                 labelText: "Password",
-                                textInputAction: TextInputAction.next,
-                                prefixIcon: Icons.lock_outlined,
+                                context: context,
+                                textHintStyle: hintTextStyle,
+                                textLabelStyle: labelTextStyle,
+                                textErrorStyle: errorTextStyle,
+                                textInputAction: TextInputAction.none,
+                                prefix: Icon(
+                                  Icons.lock_outlined,
+                                  color: prefixIconsColor,
+                                ),
                                 hidden: ShopRegisterCubit.get(context).isHidden,
-                                suffixIcon: IconButton(
-                                  icon: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Icon(
-                                      ShopRegisterCubit.get(context).icon,
-                                      color: AppCubit.get(context).isDark
-                                          ? Colors.grey.shade400
-                                          : Colors.grey,
-                                    ),
-                                  ),
-                                  onPressed: () {
+                                suffixIcon: GestureDetector(
+                                  onTap: () {
                                     ShopRegisterCubit.get(context)
                                         .changePasswordVisibility();
                                   },
+                                  child: Icon(
+                                    ShopRegisterCubit.get(context).icon,
+                                    color: prefixIconsColor,
+                                  ),
                                 ),
                                 controller: passwordController,
                                 validatorFunction: (String value) {
+                                  RegExp rex = RegExp(
+                                      r"(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)");
                                   if (value.isEmpty) {
                                     return "Password must not be empty";
+                                  } else if (value.length < 8 ||
+                                      !rex.hasMatch(value)) {
+                                    return "Password must not be less than 8 digits, 1 capital letter, 1 small letter";
                                   } else {
                                     return null;
                                   }
@@ -163,22 +190,41 @@ class ShopRegisterScreen extends StatelessWidget {
                             ),
                             Expanded(
                               child: defaultTextFormField(
-                                  hintStyle: TextStyle(color: Colors.grey),
-                                  hintText: "Type Your Phone Number",
-                                  labelText: "Phone",
-                                  textInputAction: TextInputAction.done,
-                                  prefixIcon: Icons.phone,
-                                  controller: phoneController,
-                                  validatorFunction: (String value) {
-                                    if (value.isEmpty) {
-                                      return "Phone Number must not be empty";
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                  borderRadius: 10,
-                                  textInputType: TextInputType.phone,
-                                  height: 80),
+                                isDense: true,
+                                contentPadding:
+                                    EdgeInsets.symmetric(vertical: 5),
+                                height: 80,
+                                textHintStyle: hintTextStyle,
+                                textLabelStyle: labelTextStyle,
+                                textErrorStyle: errorTextStyle,
+                                hintText: "Type Your Phone Number",
+                                labelText: "Phone",
+                                maxLength:
+                                    ShopRegisterCubit.get(context).maxLength,
+                                textInputAction: TextInputAction.done,
+                                prefix: Container(
+                                  height: 20,
+                                  alignment: Alignment.centerLeft,
+                                  margin: EdgeInsets.zero,
+                                  padding: EdgeInsets.zero,
+                                  child: buildCountryKeys(context),
+                                ),
+                                controller: phoneController,
+                                validatorFunction: (String value) {
+                                  if (value.isEmpty) {
+                                    return "Phone Number must not be empty";
+                                  } else if (value.length <
+                                      ShopRegisterCubit.get(context)
+                                          .maxLength) {
+                                    return "wrong number must be at least ${ShopRegisterCubit.get(context).maxLength} digits";
+                                  } else {
+                                    return null;
+                                  }
+                                },
+                                borderRadius: 10,
+                                textInputType: TextInputType.phone,
+                                context: context,
+                              ),
                             ),
                           ],
                         ),
@@ -192,6 +238,7 @@ class ShopRegisterScreen extends StatelessWidget {
                             Center(child: CircularProgressIndicator()),
                         builder: (context) => defaultButton(
                           text: "REGISTER",
+                          textStyle: buttonTextStyle,
                           function: () {
                             if (formKey.currentState.validate()) {
                               // formKey.currentState.save();
@@ -226,11 +273,9 @@ class ShopRegisterScreen extends StatelessWidget {
                             ),
                             child: Text(
                               "LOGIN",
-                              style: TextStyle(color: defaultAppColor),
+                              style: authCaptionRegisterLoginTextStyle,
                             ),
                             onPressed: () {
-                              // doNamedNavigation(context, ShopRegisterScreen.id);
-
                               doReplacementWidgetNavigation(
                                   context, ShopLoginScreen());
                             },
@@ -251,7 +296,25 @@ class ShopRegisterScreen extends StatelessWidget {
   buildTextHeading(BuildContext context) {
     return Text(
       "REGISTER",
-      style: Theme.of(context).textTheme.headline3,
+      style: GoogleFonts.aclonica(
+          textStyle: Theme.of(context).textTheme.headline3),
+    );
+  }
+
+  buildCountryKeys(BuildContext context) {
+    return Center(
+      child: CountryCodePicker(
+        padding: EdgeInsets.zero,
+        onChanged: (countryCode) {
+          ShopRegisterCubit.get(context).onCountryChange(countryCode, context);
+        },
+        initialSelection: 'EG',
+        favorite: const ['+20', 'EG'],
+        showCountryOnly: false,
+        flagWidth: 25,
+        showOnlyCountryWhenClosed: false,
+        alignLeft: false,
+      ),
     );
   }
 }

@@ -37,14 +37,13 @@ ThemeData lightTheme = ThemeData(
   primarySwatch: Colors.deepOrange,
   scaffoldBackgroundColor: Colors.white,
   appBarTheme: AppBarTheme(
-    elevation: 0,
+      elevation: 0,
       titleTextStyle: TextStyle(
         color: Colors.black,
         fontSize: 20,
         fontWeight: FontWeight.bold,
       ),
       iconTheme: IconThemeData(color: Colors.black),
-      backwardsCompatibility: false,
       systemOverlayStyle: SystemUiOverlayStyle(
         statusBarColor: Colors.white,
         statusBarIconBrightness: Brightness.dark,
@@ -92,7 +91,6 @@ ThemeData darkTheme = ThemeData(
       fontWeight: FontWeight.bold,
     ),
     iconTheme: IconThemeData(color: Colors.white),
-    backwardsCompatibility: false,
     systemOverlayStyle: SystemUiOverlayStyle(
       statusBarColor: HexColor("333739"),
       statusBarIconBrightness: Brightness.light,

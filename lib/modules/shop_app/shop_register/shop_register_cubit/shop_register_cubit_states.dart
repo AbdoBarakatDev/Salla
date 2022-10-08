@@ -14,6 +14,8 @@ class ShopRegisterSuccessStates extends ShopRegisterStates {
 
 class ShopRegisterChangePasswordVisibilityStates extends ShopRegisterStates {}
 
+class ChangePhoneLengthStates extends ShopRegisterStates {}
+
 class ShopRegisterErrorStates extends ShopRegisterStates {
   final String error;
 

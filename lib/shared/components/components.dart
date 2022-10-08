@@ -1,8 +1,11 @@
-import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
+import 'dart:developer';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import 'package:shop_app/models/shop_app_model/favorites_model.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:shop_app/modules/shop_app/cubit/cubit.dart';
 import 'package:shop_app/shared/components/constants.dart';
 import 'package:shop_app/shared/cubit/app_cubit.dart';
@@ -41,14 +44,17 @@ Widget defaultTextFormField({
   Function onSubmited,
   @required String hintText,
   String labelText,
-  @required IconData prefixIcon,
+  IconData prefixIcon,
+  Widget prefix,
   Widget suffixIcon,
   Color textColor,
   Color hintColor,
   Color prefixIconColor = Colors.grey,
   Color suffixIconColor = Colors.grey,
-  TextStyle hintStyle,
+  TextStyle textHintStyle,
+  TextStyle textLabelStyle,
   TextStyle textStyle,
+  TextStyle textErrorStyle,
   TextEditingController controller,
   Function validatorFunction,
   double borderRadius = 0,
@@ -85,21 +91,36 @@ Widget defaultTextFormField({
         onTap: onTab,
         onChanged: onChange,
         onFieldSubmitted: onSubmited,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        inputFormatters: [
+          LengthLimitingTextInputFormatter(maxLength,
+              maxLengthEnforcement: MaxLengthEnforcement.enforced),
+        ],
         decoration: InputDecoration(
-          errorStyle: const TextStyle(fontSize: 0.01),
-          // contentPadding: EdgeInsets.symmetric(vertical: 10),
+          hintMaxLines: 1,
+          contentPadding: (prefix != null && prefix is Widget)
+              ? const EdgeInsets.symmetric(vertical: 2)
+              : contentPadding,
           labelText: labelText,
-          labelStyle: context != null
-              ? Theme.of(context).textTheme.bodyText2
+          labelStyle: (context != null && textLabelStyle != null)
+              ? textLabelStyle
               : TextStyle(color: Colors.grey),
           isDense: isDense,
           hintText: hintText,
-          hintStyle: hintStyle,
-          prefixIcon: Icon(
-            prefixIcon,
-            color: prefixIconColor,
-          ),
-          suffix: suffixIcon,
+          hintStyle: textHintStyle != null
+              ? textHintStyle
+              : TextStyle(color: Colors.grey),
+          errorStyle: textErrorStyle != null
+              ? textErrorStyle
+              : TextStyle(color: Colors.red),
+          prefixIcon: Padding(
+              padding: const EdgeInsets.only(left: 5, right: 8), child: prefix),
+          prefixIconConstraints: prefix is Widget
+              ? const BoxConstraints(
+                  maxWidth: 100, minHeight: 50, maxHeight: 100)
+              : const BoxConstraints(minWidth: 90),
+          suffix:
+              Padding(padding: EdgeInsets.only(right: 10), child: suffixIcon),
 
           border: OutlineInputBorder(
             borderSide: BorderSide(width: borderSize, color: borderColor),
@@ -126,6 +147,13 @@ doWidgetNavigation(BuildContext context, Widget screen) =>
 doReplacementWidgetNavigation(BuildContext context, Widget screen) =>
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => screen));
+
+doWidgetNavigationAndRemoveUntil(BuildContext context, Widget screen) =>
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => screen),
+      ModalRoute.withName('$screen'),
+    );
 
 enum SnackBarStates { SUCCESS, ERROR, WARNING }
 
@@ -168,25 +196,18 @@ buildListItem(model, BuildContext context, {bool hasOldPrice = true}) {
         child: Row(
           children: [
             Container(
-              color:Colors.white,
+              color: Colors.white,
               child: Stack(
                 alignment: AlignmentDirectional.bottomStart,
                 children: [
-                  FadeInImage(
-                    height: mainCategoryItemHeight,
-                    width: mainCategoryItemWidth,
-                    image: NetworkImage(model.image.toString(),),
-                    placeholder: AssetImage("assets/images/loading.jpg",),
-                    placeholderFit: BoxFit.scaleDown,
-                    imageErrorBuilder:
-                        (context, error, stackTrace) {
-                      return Image.asset(
-                          "assets/images/error_handle.png",
-                          fit: BoxFit.fitWidth);
-                    },
-                    fit: BoxFit.contain,
+                  customShimmerNetworkImage(
+                    imagePath: model.image.toString(),
+                    imgHeight: mainCategoryItemHeight,
+                    imgWidth: mainCategoryItemWidth,
+                    backgroundWidth: mainCategoryItemWidth,
+                    imgFit: BoxFit.contain,
                   ),
-                  model.discount != 0 &&hasOldPrice
+                  model.discount != 0 && hasOldPrice
                       ? Container(
                           padding: EdgeInsets.symmetric(horizontal: 4),
                           child: Text(
@@ -241,7 +262,7 @@ buildListItem(model, BuildContext context, {bool hasOldPrice = true}) {
                               : Colors.grey,
                         ),
                         onPressed: () {
-                          print(model.id);
+                          log(model.id.toString());
                           ShopAppCubit.get(context).changeFavorites(model.id);
                         },
                       )
@@ -252,6 +273,66 @@ buildListItem(model, BuildContext context, {bool hasOldPrice = true}) {
             )
           ],
         ),
+      ),
+    ),
+  );
+}
+
+showToast({
+  BuildContext context,
+  @required String message,
+  Toast time = Toast.LENGTH_SHORT,
+  MaterialColor color = Colors.green,
+  Color textColor = Colors.white,
+  double fontSize = 16.0,
+  ToastGravity gravity = ToastGravity.BOTTOM,
+}) {
+  Fluttertoast.showToast(
+      msg: message,
+      toastLength: time,
+      gravity: gravity,
+      timeInSecForIosWeb: 1,
+      backgroundColor: color,
+      textColor: textColor,
+      fontSize: fontSize);
+}
+
+Widget customShimmerNetworkImage(
+    {@required String imagePath,
+    @required double imgHeight,
+    @required double imgWidth,
+    @required double backgroundWidth,
+    BoxFit imgFit = BoxFit.cover,
+    double borderRadius = 10.0,
+    Color shimmerBackgroundBaseColor,
+    Color shimmerBackgroundHighlightColor}) {
+  return ClipRRect(
+    borderRadius: BorderRadius.circular(borderRadius),
+    child: Container(
+      height: imgHeight,
+      width: backgroundWidth,
+      color: Colors.white,
+      child: CachedNetworkImage(
+        width: imgWidth,
+        height: imgHeight,
+        fit: imgFit,
+        imageUrl: imagePath,
+        placeholder: (context, url) => Shimmer.fromColors(
+          baseColor: shimmerBackgroundBaseColor ??
+              (AppCubit.get(context).isDark
+                  ? Colors.grey[850]
+                  : Colors.grey[100]),
+          highlightColor: shimmerBackgroundHighlightColor ?? Colors.grey[800],
+          child: Container(
+            height: imgHeight,
+            width: imgWidth,
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+          ),
+        ),
+        errorWidget: (context, url, error) => const Icon(Icons.error),
       ),
     ),
   );

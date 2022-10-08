@@ -1,10 +1,8 @@
-import 'dart:io';
-
+import 'dart:developer';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:shop_app/models/shop_app_model/shop_app_model.dart';
 import 'package:shop_app/modules/shop_app/cubit/cubit.dart';
 import 'package:shop_app/modules/shop_app/cubit/states.dart';
@@ -15,13 +13,11 @@ import 'package:shop_app/shared/components/constants.dart';
 import 'package:shop_app/shared/cubit/app_cubit.dart';
 
 class ShopAppSettingsScreen extends StatelessWidget {
-
   static String id = "ShopAppSettingsScreen";
   var nameController = TextEditingController();
   var emailController = TextEditingController();
   var phoneController = TextEditingController();
   var passwordController = TextEditingController();
-  File _image;
   final picker = ImagePicker();
 
   BuildContext buildContext;
@@ -41,12 +37,14 @@ class ShopAppSettingsScreen extends StatelessWidget {
       builder: (context, state) {
         buildContext = context;
         ShopAppLoginModel model = ShopAppCubit.get(context).profileModel;
-        // print("Token in setting is : $token");
-        // print("Model in setting is : ${model.data.email}");
+        log("Token in setting is : $token");
+        log("Model in setting is : ${model.data.email}");
         return ConditionalBuilder(
           condition: model != null,
           builder: (context) {
-            return buildSettings(model, context,
+            return buildSettings(
+              model,
+              context,
             );
           },
           fallback: (context) => Center(
@@ -57,18 +55,20 @@ class ShopAppSettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget buildSettings(ShopAppLoginModel model, BuildContext context,
-     ) {
-    print("From Account ${ShopAppCubit.get(context).isFromAccountIcon}");
+  Widget buildSettings(
+    ShopAppLoginModel model,
+    BuildContext context,
+  ) {
+    log("From Account ${ShopAppCubit.get(context).isFromAccountIcon}");
     var formKey = GlobalKey<FormState>();
     nameController.text = model.data.name.toString();
     emailController.text = model.data.email.toString();
     phoneController.text = model.data.phone.toString();
     passwordController.text = model.data.phone.toString();
     String imagePath = model.data.image;
-    print("Name is : ${nameController.text}");
-    print("Email is : ${emailController.text}");
-    print("Phone is : ${phoneController.text}");
+    log("Name is : ${nameController.text}");
+    log("Email is : ${emailController.text}");
+    log("Phone is : ${phoneController.text}");
     return SingleChildScrollView(
       physics: BouncingScrollPhysics(),
       child: Padding(
@@ -78,57 +78,61 @@ class ShopAppSettingsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-             ShopAppCubit.get(context).isFromAccountIcon==false? Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "App Settings",
-                    style: Theme.of(context).textTheme.headline6,
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(10),
-                    child: Column(
+              ShopAppCubit.get(context).isFromAccountIcon == false
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Dark Mode"),
-                            Switch(
-                                value: AppCubit.get(context).isDark,
-                                onChanged: (value) {
-                                  AppCubit.get(context).changeThemeMode();
-                                })
-                          ],
+                        Text(
+                          "App Settings",
+                          style: Theme.of(context).textTheme.headline6,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Logout"),
-                            IconButton(
-                              icon: Icon(
-                                Icons.logout,
-                                color: Theme.of(context)
-                                    .appBarTheme
-                                    .iconTheme
-                                    .color,
+                        Container(
+                          padding: EdgeInsets.all(10),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text("Dark Mode"),
+                                  Switch(
+                                      value: AppCubit.get(context).isDark,
+                                      onChanged: (value) {
+                                        AppCubit.get(context).changeThemeMode();
+                                      })
+                                ],
                               ),
-                              onPressed: () {
-                                ShopLoginCubit.get(context)
-                                    .logout(token: token, context: context);
-                              },
-                            ),
-                          ],
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text("Logout"),
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.logout,
+                                      color: Theme.of(context)
+                                          .appBarTheme
+                                          .iconTheme
+                                          .color,
+                                    ),
+                                    onPressed: () {
+                                      ShopLoginCubit.get(context).logout(
+                                          token: token, context: context);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
+                        Divider(
+                            height: 20,
+                            color: Colors.grey.shade400,
+                            indent: 10,
+                            endIndent: 10),
                       ],
-                    ),
-                  ),
-                  Divider(
-                      height: 20,
-                      color: Colors.grey.shade400,
-                      indent: 10,
-                      endIndent: 10),
-                ],
-              ):Container(),
+                    )
+                  : Container(),
               Text(
                 "Personal Settings",
                 style: Theme.of(context).textTheme.headline6,
@@ -145,7 +149,10 @@ class ShopAppSettingsScreen extends StatelessWidget {
                           context: buildContext,
                           borderRadius: 10,
                           hintText: "Profile Name",
-                          prefixIcon: Icons.person,
+                          textHintStyle: hintTextStyle,
+                          textLabelStyle: labelTextStyle,
+                          textErrorStyle: errorTextStyle,
+                          prefix: Icon(Icons.person,color:prefixIconsColor,),
                           // validatorFunction: () {},
                           labelText: "Name",
                           enabled: ShopAppCubit.get(buildContext).editEnabled,
@@ -157,7 +164,10 @@ class ShopAppSettingsScreen extends StatelessWidget {
                           context: buildContext,
                           borderRadius: 10,
                           hintText: "Email Address",
-                          prefixIcon: Icons.email,
+                          textHintStyle: hintTextStyle,
+                          textLabelStyle: labelTextStyle,
+                          textErrorStyle: errorTextStyle,
+                          prefix: Icon(Icons.email,color:prefixIconsColor,),
                           // validatorFunction: () {},
                           labelText: "Email Address",
                           enabled: ShopAppCubit.get(buildContext).editEnabled,
@@ -169,9 +179,14 @@ class ShopAppSettingsScreen extends StatelessWidget {
                           context: buildContext,
                           borderRadius: 10,
                           hintText: "Phone Number",
-                          prefixIcon: Icons.phone,
+                          prefix: Icon(Icons.phone,color:prefixIconsColor,),
+                          textHintStyle: hintTextStyle,
+                          textLabelStyle: labelTextStyle,
+                          textErrorStyle: errorTextStyle,
+                          height: 90,
                           // validatorFunction: () {},
                           labelText: "phone",
+                          // maxLength: ShopRegisterCubit.get(buildContext).maxLength,
                           enabled: ShopAppCubit.get(buildContext).editEnabled,
                           controller: phoneController),
                       SizedBox(height: 30),
@@ -236,6 +251,7 @@ class ShopAppSettingsScreen extends StatelessWidget {
                                       name: nameController.text,
                                       email: emailController.text,
                                       phone: phoneController.text,
+                                      password: null,
                                       image: imagePath,
                                     );
                                     ShopAppCubit.get(buildContext)
@@ -290,7 +306,7 @@ class ShopAppSettingsScreen extends StatelessWidget {
 //     _image = File(pickedImage.path);
 //     ShopAppCubit.get(buildContext).getImage(_image);
 //   } else {
-//     print("No items selected");
+//     log("No items selected");
 //   }
 // }
 }
