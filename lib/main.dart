@@ -3,31 +3,31 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import 'package:shop_app/modules/shop_app/carts_screen/carts_screen.dart';
-import 'package:shop_app/modules/shop_app/categories/categories_screen.dart';
-import 'package:shop_app/modules/shop_app/category_details/category_details.dart';
-import 'package:shop_app/modules/shop_app/cubit/cubit.dart';
-import 'package:shop_app/modules/shop_app/favorites/favorites_screen.dart';
-import 'package:shop_app/modules/shop_app/home/home_screen.dart';
-import 'package:shop_app/modules/shop_app/on_boarding/onboarding_screen.dart';
-import 'package:shop_app/modules/shop_app/orders_screen/orders_screen.dart';
-import 'package:shop_app/modules/shop_app/product_details/product_details.dart';
-import 'package:shop_app/modules/shop_app/search/cubit/cubit.dart';
-import 'package:shop_app/modules/shop_app/search/search_screen.dart';
-import 'package:shop_app/modules/shop_app/settings/settings_screen.dart';
-import 'package:shop_app/modules/shop_app/shop_layout/shop_layout.dart';
-import 'package:shop_app/modules/shop_app/shop_login/shop_login_cubit/shop_login_cubit.dart';
-import 'package:shop_app/modules/shop_app/shop_login/shop_login_screen.dart';
-import 'package:shop_app/modules/shop_app/shop_register/shop_register_cubit/shop_register_cubit.dart';
-import 'package:shop_app/modules/shop_app/shop_register/shop_register_screen.dart';
+import 'package:shop_app/modules/search/search_cubit/cubit.dart';
 import 'package:shop_app/shared/bloc_observer.dart';
 import 'package:shop_app/shared/components/components.dart';
 import 'package:shop_app/shared/components/constants.dart';
-import 'package:shop_app/shared/cubit/app_cubit.dart';
-import 'package:shop_app/shared/cubit/app_states.dart';
+import 'package:shop_app/shared/cubit/functional_cubit.dart';
+import 'package:shop_app/shared/helper_cubit/app_cubit.dart';
+import 'package:shop_app/shared/helper_cubit/app_states.dart';
 import 'package:shop_app/shared/network/local/darkness_helper.dart';
 import 'package:shop_app/shared/network/remote/shopapp_dio_helper.dart';
 import 'package:shop_app/shared/styles/themes.dart';
+import 'modules/authentication_screens/shop_login/shop_login_cubit/shop_login_cubit.dart';
+import 'modules/authentication_screens/shop_login/shop_login_screen.dart';
+import 'modules/authentication_screens/shop_register/shop_register_cubit/shop_register_cubit.dart';
+import 'modules/authentication_screens/shop_register/shop_register_screen.dart';
+import 'modules/bottom_nav_screens/categories/categories_screen.dart';
+import 'modules/bottom_nav_screens/categories/category_details/category_details.dart';
+import 'modules/bottom_nav_screens/favorites/favorites_screen.dart';
+import 'modules/bottom_nav_screens/home/home_screen.dart';
+import 'modules/bottom_nav_screens/settings/settings_screen.dart';
+import 'modules/carts_screen/carts_screen.dart';
+import 'modules/on_boarding/onboarding_screen.dart';
+import 'modules/orders_screen/orders_screen.dart';
+import 'modules/product_details/product_details.dart';
+import 'modules/search/search_screen.dart';
+import 'modules/shop_layout/shop_layout.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -72,7 +72,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    checkInternetConnection(context);
+    // checkInternetConnection(context);
     return MultiProvider(
       providers: [
       

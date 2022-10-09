@@ -6,9 +6,9 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:shop_app/modules/shop_app/cubit/cubit.dart';
 import 'package:shop_app/shared/components/constants.dart';
-import 'package:shop_app/shared/cubit/app_cubit.dart';
+import 'package:shop_app/shared/cubit/functional_cubit.dart';
+import 'package:shop_app/shared/helper_cubit/app_cubit.dart';
 
 Widget defaultButton({
   Color buttonColor = Colors.cyanAccent,
