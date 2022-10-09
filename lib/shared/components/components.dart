@@ -6,6 +6,10 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:shop_app/models/shop_app_model/cart_model.dart';
+import 'package:shop_app/models/shop_app_model/favorites_model.dart';
+import 'package:shop_app/models/shop_app_model/shop_app_home_model.dart';
+import 'package:shop_app/modules/product_details/product_details.dart';
 import 'package:shop_app/shared/components/constants.dart';
 import 'package:shop_app/shared/cubit/functional_cubit.dart';
 import 'package:shop_app/shared/helper_cubit/app_cubit.dart';
@@ -188,90 +192,95 @@ showSnackBar({
 
 buildListItem(model, BuildContext context, {bool hasOldPrice = true}) {
   int id = model.id;
-  return Padding(
-    padding: const EdgeInsets.all(8.0),
-    child: Container(
-      height: mainCategoryItemHeight,
-      child: Card(
-        child: Row(
-          children: [
-            Container(
-              color: Colors.white,
-              child: Stack(
-                alignment: AlignmentDirectional.bottomStart,
-                children: [
-                  customShimmerNetworkImage(
-                    imagePath: model.image.toString(),
-                    imgHeight: mainCategoryItemHeight,
-                    imgWidth: mainCategoryItemWidth,
-                    backgroundWidth: mainCategoryItemWidth,
-                    imgFit: BoxFit.contain,
-                  ),
-                  model.discount != 0 && hasOldPrice
-                      ? Container(
-                          padding: EdgeInsets.symmetric(horizontal: 4),
-                          child: Text(
-                            "Discount",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          color: Colors.red,
-                        )
-                      : Container()
-                ],
+  return GestureDetector(
+    onTap: () {
+      //todo: open prod details
+      // doWidgetNavigation(context, ShopProductDetailsScreen(product: ProductsModel,));
+    },
+    child: Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        height: mainCategoryItemHeight,
+        child: Card(
+          child: Row(
+            children: [
+              Container(
+                child: Stack(
+                  alignment: AlignmentDirectional.bottomStart,
+                  children: [
+                    customShimmerNetworkImage(
+                      imagePath: model.image.toString(),
+                      imgHeight: mainCategoryItemHeight,
+                      imgWidth: mainCategoryItemWidth,
+                      backgroundWidth: mainCategoryItemWidth,
+                      imgFit: BoxFit.contain,
+                    ),
+                    model.discount != 0 && hasOldPrice
+                        ? Container(
+                            padding: EdgeInsets.symmetric(horizontal: 4),
+                            child: Text(
+                              "Discount",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            color: Colors.red,
+                          )
+                        : Container()
+                  ],
+                ),
               ),
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            Expanded(
-              child: Column(
-                children: [
-                  Text(
-                    model.name,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Spacer(),
-                  Row(
-                    children: [
-                      Text(
-                        model.price.toString(),
-                        style: TextStyle(color: calcBtnColor),
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      model.discount != 0 && hasOldPrice
-                          ? Text(
-                              model.oldPrice.toString(),
-                              style: TextStyle(
-                                  color: Colors.grey.shade400,
-                                  decoration: TextDecoration.lineThrough),
-                            )
-                          : Container(),
-                      Spacer(),
-                      IconButton(
-                        icon: Icon(
-                          ShopAppCubit.get(context).favorites[id] != null &&
-                                  ShopAppCubit.get(context).favorites[id]
-                              ? Icons.favorite
-                              : Icons.favorite_border,
-                          size: 30,
-                          color: ShopAppCubit.get(context).favorites[model.id]
-                              ? Colors.red
-                              : Colors.grey,
+              SizedBox(
+                width: 10,
+              ),
+              Expanded(
+                child: Column(
+                  children: [
+                    Text(
+                      model.name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Spacer(),
+                    Row(
+                      children: [
+                        Text(
+                          model.price.toString(),
+                          style: TextStyle(color: calcBtnColor),
                         ),
-                        onPressed: () {
-                          log(model.id.toString());
-                          ShopAppCubit.get(context).changeFavorites(model.id);
-                        },
-                      )
-                    ],
-                  ),
-                ],
-              ),
-            )
-          ],
+                        SizedBox(
+                          width: 5,
+                        ),
+                        model.discount != 0 && hasOldPrice
+                            ? Text(
+                                model.oldPrice.toString(),
+                                style: TextStyle(
+                                    color: Colors.grey.shade400,
+                                    decoration: TextDecoration.lineThrough),
+                              )
+                            : Container(),
+                        Spacer(),
+                        IconButton(
+                          icon: Icon(
+                            ShopAppCubit.get(context).favorites[id] != null &&
+                                    ShopAppCubit.get(context).favorites[id]
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            size: 30,
+                            color: ShopAppCubit.get(context).favorites[model.id]
+                                ? Colors.red
+                                : Colors.grey,
+                          ),
+                          onPressed: () {
+                            log(model.id.toString());
+                            ShopAppCubit.get(context).changeFavorites(model.id);
+                          },
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     ),

@@ -52,7 +52,7 @@ class ShopAppCategoriesScreen extends StatelessWidget {
                           Text(model.data.data[index].name),
                           Spacer(),
                           IconButton(
-                            icon: Icon(Icons.arrow_forward_ios_outlined),
+                            icon: Icon(Icons.arrow_forward_ios_outlined,color: Theme.of(context).appBarTheme.iconTheme.color,),
                             onPressed: () {},
                           )
                         ],

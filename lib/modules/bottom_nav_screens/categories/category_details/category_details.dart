@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shop_app/modules/search/search_cubit/cubit.dart';
@@ -30,19 +32,6 @@ class ShopCategoryDetailsScreen extends StatelessWidget {
                   child: Stack(
                     alignment: AlignmentDirectional.bottomStart,
                     children: [
-                      // FadeInImage(
-                      //   width: width,
-                      //   image: NetworkImage(modelCategoryImage.toString()),
-                      //   placeholder: AssetImage(
-                      //     AppCubit.get(context).isDark?loadingIconDark:loadingIconLite,
-                      //   ),
-                      //   placeholderFit: BoxFit.scaleDown,
-                      //   imageErrorBuilder: (context, error, stackTrace) {
-                      //     return Image.asset(loadingErrorImage,
-                      //         fit: BoxFit.fitWidth);
-                      //   },
-                      //   fit: BoxFit.fitWidth,
-                      // ),
                       customShimmerNetworkImage(
                         imagePath: modelCategoryImage.toString(),
                         imgHeight: height * 0.25,
