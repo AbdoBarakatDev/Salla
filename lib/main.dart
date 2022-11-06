@@ -75,7 +75,6 @@ class MyApp extends StatelessWidget {
     // checkInternetConnection(context);
     return MultiProvider(
       providers: [
-      
         BlocProvider<AppCubit>(
           create: (context) =>
               AppCubit()..changeThemeMode(isDarkFromShared: isDark),

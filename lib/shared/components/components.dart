@@ -125,7 +125,6 @@ Widget defaultTextFormField({
               : const BoxConstraints(minWidth: 90),
           suffix:
               Padding(padding: EdgeInsets.only(right: 10), child: suffixIcon),
-
           border: OutlineInputBorder(
             borderSide: BorderSide(width: borderSize, color: borderColor),
             borderRadius: BorderRadius.circular(borderRadius),
@@ -288,7 +287,6 @@ buildListItem(model, BuildContext context, {bool hasOldPrice = true}) {
 }
 
 showToast({
-  BuildContext context,
   @required String message,
   Toast time = Toast.LENGTH_SHORT,
   MaterialColor color = Colors.green,

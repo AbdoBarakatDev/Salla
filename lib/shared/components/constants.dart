@@ -10,7 +10,9 @@ final Color cardItemColor = Colors.teal.shade600.withOpacity(0.9);
 final Color baseTextItemColor = Colors.grey.shade200;
 final Color floatingBtnColor = Colors.grey.shade400;
 final Color calcBtnColor = Colors.red.shade300;
-final Color prefixIconsColor = Colors.grey;
+const Color prefixIconsColor = Colors.grey;
+const Color successColor = Colors.green;
+const Color errorColor = Colors.red;
 
 // for fonts
 TextStyle hintTextStyle =

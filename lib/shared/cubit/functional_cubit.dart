@@ -206,7 +206,7 @@ class ShopAppCubit extends Cubit<ShopAppStates> {
         showToast(
             message: ShopAppLoginModel.fromJson(value.data).message +
                 " try another one",
-            color: Colors.red);
+            color: errorColor);
       } else {
         log("value after update : ${ShopAppLoginModel.fromJson(value.data).message}");
         log("Value Data is : ${value.data}");
@@ -264,7 +264,6 @@ class ShopAppCubit extends Cubit<ShopAppStates> {
     emit(ShopAppChangeExpandCollapseStates());
   }
 
-  //================================================
   ChangOrdersModel changOrdersModel;
 
   void addOrder(
@@ -287,26 +286,26 @@ class ShopAppCubit extends Cubit<ShopAppStates> {
       log("Change Order on Add: " + changOrdersModel.toString());
       log("Change Order on Add: " + changOrdersModel.status.toString());
       log("Change Order on Add: " + changOrdersModel.message.toString());
-      showSnackBar(
-          context: context,
-          message: changOrdersModel.message,
-          states: SnackBarStates.SUCCESS);
+      showToast(
+        message: changOrdersModel.message,
+        color: successColor,
+      );
       if (!changOrdersModel.status) {
       } else {
         getOrders(context: context);
       }
       emit(ShopAppAddOrderSuccessStates());
     }).catchError((error) {
-      showSnackBar(
-          context: context,
-          message: error.toString(),
-          states: SnackBarStates.ERROR);
+      showToast(
+        message: error.toString(),
+        color: errorColor,
+      );
       emit(ShopAppAddOrderFailStates());
       log(error.toString());
     });
   }
 
-  void cancelOrder(int id) {
+  void cancelOrder(int id, BuildContext context) {
     favorites[id] = !favorites[id];
     emit(ShopAppCancelOrderLoadingStates());
 
@@ -319,7 +318,7 @@ class ShopAppCubit extends Cubit<ShopAppStates> {
       log("Change Order on Cancel: " + changOrdersModel.toString());
       if (!changOrdersModel.status) {
       } else {
-        getOrders();
+        getOrders(context: context);
       }
       emit(ShopAppCancelOrderSuccessStates());
     }).catchError((error) {
@@ -339,22 +338,15 @@ class ShopAppCubit extends Cubit<ShopAppStates> {
       log("Value in add is : " + value.data.toString());
       ordersModel = OrdersModel.fromJson(value.data);
       log("ordersModel get Orders: " + ordersModel.data.data.toString());
-      showSnackBar(
-          context: context,
-          message: ordersModel.data.data.toString(),
-          states: SnackBarStates.ERROR);
+      // showToast(message: ordersModel.data.data.toString());
       emit(ShopAppGetOrderSuccessStates());
     }).catchError((error) {
       log("Error is $error");
-      showSnackBar(
-          context: context,
-          message: error.toString(),
-          states: SnackBarStates.ERROR);
+      // showToast(message: error.toString());
       emit(ShopAppGetOrderFailStates());
     });
   }
 
-//================================================
   CartModel cartModel;
 
   void getCarts({BuildContext context}) {
@@ -368,23 +360,15 @@ class ShopAppCubit extends Cubit<ShopAppStates> {
       log("cartsModel get Carts is: " + cartModel.data.cartItems.toString());
       log("Length cartsModel get Carts is: " +
           cartModel.data.cartItems.length.toString());
-
-      showSnackBar(
-          context: context,
-          message: ordersModel.data.data.toString(),
-          states: SnackBarStates.ERROR);
+      // showToast(message: ordersModel.data.data.toString());
       emit(ShopAppGetCartsSuccessStates());
     }).catchError((error) {
       log("Error is $error");
-      showSnackBar(
-          context: context,
-          message: error.toString(),
-          states: SnackBarStates.ERROR);
+      // showToast(message: error.toString());
       emit(ShopAppGetCartsFailStates());
     });
   }
 
-//===============================================
   ChangCartsModel changeCartsModel;
 
   void addToCart(
@@ -412,20 +396,20 @@ class ShopAppCubit extends Cubit<ShopAppStates> {
     ).then((value) {
       changeCartsModel = ChangCartsModel.fromJson(value.data);
       log("Change Carts on Add: " + changeCartsModel.toString());
-      showSnackBar(
-          context: context,
-          message: changeCartsModel.message,
-          states: SnackBarStates.SUCCESS);
+      showToast(
+        message: changeCartsModel.message,
+        color: successColor,
+      );
       if (!changOrdersModel.status) {
       } else {
         getCarts(context: context);
       }
       emit(ShopAppAddCartsSuccessStates());
     }).catchError((error) {
-      showSnackBar(
-          context: context,
-          message: error.toString(),
-          states: SnackBarStates.ERROR);
+      showToast(
+        message: error.toString(),
+        color: errorColor,
+      );
       emit(ShopAppAddCartsFailStates());
       log(error.toString());
     });
@@ -443,20 +427,20 @@ class ShopAppCubit extends Cubit<ShopAppStates> {
     ).then((value) {
       changeCartsModel = ChangCartsModel.fromJson(value.data);
       log("Delete Cart is : " + changeCartsModel.toString());
-      showSnackBar(
-          context: context,
-          message: "Deleted Successfully",
-          states: SnackBarStates.SUCCESS);
+      showToast(
+        message: "Deleted Successfully",
+        color: successColor,
+      );
       if (!changOrdersModel.status) {
       } else {
         getCarts(context: context);
       }
       emit(ShopAppRemoveCartsSuccessStates());
     }).catchError((error) {
-      showSnackBar(
-          context: context,
-          message: error.toString(),
-          states: SnackBarStates.ERROR);
+      showToast(
+        message: error.toString(),
+        color: errorColor,
+      );
       emit(ShopAppRemoveCartsFailStates());
       log(error.toString());
     });
